@@ -1,0 +1,7 @@
+.idea/*
+src/main/java/*
+.gradle/*
+gradle/*
+gradlew
+gradlew.bat
+build/*
