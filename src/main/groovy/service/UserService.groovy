@@ -7,4 +7,5 @@ import org.restlet.representation.Representation
 interface UserService {
   Representation signUpUserService(Userdata userdata);
   ResponseData signInUserService(Userdata userdata);
+  Representation changeUserPasswordService(Userdata userdata);
 }

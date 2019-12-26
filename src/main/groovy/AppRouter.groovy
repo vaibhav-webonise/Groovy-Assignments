@@ -14,5 +14,6 @@ class AppRouter extends RestlingRouter {
   void init() throws Exception {
     attach("/sign-up", SignUpController)
     attach("/sign-in", SignInController)
+    attach("/user", SignInController)
   }
 }

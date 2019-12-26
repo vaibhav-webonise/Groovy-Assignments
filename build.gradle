@@ -1,5 +1,3 @@
-import groovy.xml.MarkupBuilder
-import org.jooq.codegen.GenerationTool
 
 buildscript {
   repositories {
@@ -81,7 +79,7 @@ gretty {
 }
 
 def writer = new StringWriter()
-def xml = new MarkupBuilder(writer).configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.11.0.xsd') {
+def xml = new groovy.xml.MarkupBuilder(writer).configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.11.0.xsd') {
   jdbc() {
     driver('com.mysql.jdbc.Driver')
     url("${jooqDatabaseUrl}")
@@ -105,5 +103,5 @@ def xml = new MarkupBuilder(writer).configuration('xmlns': 'http://www.jooq.org/
 }
 
 task('generate') {
-  GenerationTool.generate(writer.toString())
+  org.jooq.codegen.GenerationTool.generate(writer.toString())
 }

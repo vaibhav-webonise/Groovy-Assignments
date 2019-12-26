@@ -19,7 +19,7 @@ import static db.sql.tables.Userdata.USERDATA
 @Slf4j
 class UserDaoImpl implements UserDao {
   final DSLContext dslContext;
-
+  final static int ZERO_RECORDS = 0;
   @Inject
   UserDaoImpl(DSLContext dslContext) {
     this.dslContext = dslContext
@@ -56,6 +56,22 @@ class UserDaoImpl implements UserDao {
     } else {
       log.error("User not exists with username {}", userdata.getUsername())
       throw new UserNotExistsException("User not exists with given username");
+    }
+  }
+
+  @Override
+  Representation changeUserPassword(Userdata userdata) {
+    if (checkIfUserExists(userdata.getUsername())) {
+      int recordsUpdated = dslContext.update(USERDATA).set(USERDATA.PASSWORD, userdata.getPassword()).where(USERDATA.USERNAME.eq(userdata.getUsername())).execute()
+      if (recordsUpdated > ZERO_RECORDS) {
+        log.info("Password changed successfully of username {}", userdata.getUsername())
+        return new StringRepresentation("password updated successfully", MediaType.APPLICATION_JSON)
+      } else {
+        throw new RecordCouldNotSavedException("There is an issue while changing password..")
+      }
+    } else {
+      log.error("User not exists with username {}", userdata.getUsername())
+      throw new UserNotExistsException("User not exists with given username")
     }
   }
 

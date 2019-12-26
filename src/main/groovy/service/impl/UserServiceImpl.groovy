@@ -24,4 +24,9 @@ class UserServiceImpl implements UserService {
   ResponseData signInUserService(Userdata userdata) {
     return userDao.signInUser(userdata)
   }
+
+  @Override
+  Representation changeUserPasswordService(Userdata userdata) {
+    return userDao.changeUserPassword(userdata);
+  }
 }
