@@ -1,30 +1,30 @@
-Project Name: User module
+Project Name: `User module`
 
-Description: This is a backend application that is developed to provide sign-in and sign-up api's for user module
+Description: `This is a backend application that is developed to provide sign-in and sign-up api's for user module`
 
-Application type: web application
+Application type: `web application`
 
-Platform used: Ubuntu 16.04.6 LTS
+Platform used: `Ubuntu 16.04.6 LTS`
 
-IDE used: IntelliJ IDEA 2019.2.2 (Community Edition)
+IDE used: `IntelliJ IDEA 2019.2.2 (Community Edition)`
 
-Language used: Groovy
+Language used: `Groovy`
 
-Build automation tool: Gradle 
+Build automation tool: `Gradle`
 
 Framework used:
-1. Restlet framework to build web APIs that follow the REST architecture style.
-2. Spock for testing and specification 
+1. `Restlet framework to build web APIs that follow the REST architecture style`
+2. `Spock for testing and specification`
 
 Dependencies:
-1. Jooq: It is light database-mapping software library
-2. Slf4j: Abstraction for various logging frameworks
+1. `Jooq: It is light database-mapping software library`
+2. `Slf4j: Abstraction for various logging frameworks`
 
 Prerequisites:
 
-1. JDK setup
-2. MySql database
-3. Gradle plugin
+1. `JDK setup`
+2. `MySql database`
+3. `Gradle plugin`
 
 Installation: To run this app follow given steps,
 
@@ -32,14 +32,14 @@ Installation: To run this app follow given steps,
 
 2.Go to the directory, Open terminal and type following commands
 
-3. $gradle dev
+3. `$gradle dev`
 
-4. $gradle update
+4. `$gradle update`
 
-5. $gradle generate
+5. `$gradle generate`
 
-6. $gradle tomcatRunWar
+6. `$gradle tomcatRunWar`
 
-After follwing these all steps your application will be running on http://localhost:8080/
+After follwing these all steps your application will be running on `http://localhost:8080/`
 
-Author: vaibhav-webonise vaibhav.anasune@weboniselab.com
+Author: `vaibhav-webonise vaibhav.anasune@weboniselab.com`
