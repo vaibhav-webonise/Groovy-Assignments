@@ -5,7 +5,7 @@ import service.UserService
 import service.impl.UserServiceImpl
 import spock.lang.Specification
 
-class testUserDaoImpl extends Specification {
+class testUserService extends Specification {
   UserDao mockUserDao = Mock(UserDao)
   UserService userService = new UserServiceImpl(mockUserDao)
 
