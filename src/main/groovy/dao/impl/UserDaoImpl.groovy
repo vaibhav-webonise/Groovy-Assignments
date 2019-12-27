@@ -10,6 +10,7 @@ import groovy.util.logging.Slf4j
 import model.ResponseData
 import org.jooq.DSLContext
 import org.jooq.Record
+import org.mindrot.jbcrypt.BCrypt
 import org.restlet.data.MediaType
 import org.restlet.representation.Representation
 import org.restlet.representation.StringRepresentation
@@ -20,6 +21,7 @@ import static db.sql.tables.Userdata.USERDATA
 class UserDaoImpl implements UserDao {
   final DSLContext dslContext;
   final static int ZERO_RECORDS = 0;
+
   @Inject
   UserDaoImpl(DSLContext dslContext) {
     this.dslContext = dslContext
@@ -32,7 +34,10 @@ class UserDaoImpl implements UserDao {
       log.error("User already exists with username {}", userdata.getUsername())
       throw new UserAlreadyExistsException("user exists with given username")
     } else {
-      int recordsInserted = dslContext.newRecord(USERDATA, userdata).store()
+      Userdata newUser = new Userdata();
+      newUser.setUsername(userdata.getUsername())
+      newUser.setPassword(getEncryptedPassword(userdata.getPassword()))
+      int recordsInserted = dslContext.newRecord(USERDATA, newUser).store()
       if (recordsInserted > ZERO_RECORDS) {
         log.info(" User registered successfully with username {}", userdata.getUsername());
         return new StringRepresentation("User registered successfully", MediaType.APPLICATION_JSON)
@@ -62,7 +67,7 @@ class UserDaoImpl implements UserDao {
   @Override
   Representation changeUserPassword(Userdata userdata) {
     if (checkIfUserExists(userdata.getUsername())) {
-      int recordsUpdated = dslContext.update(USERDATA).set(USERDATA.PASSWORD, userdata.getPassword()).where(USERDATA.USERNAME.eq(userdata.getUsername())).execute()
+      int recordsUpdated = dslContext.update(USERDATA).set(USERDATA.PASSWORD, getEncryptedPassword(userdata.getPassword())).where(USERDATA.USERNAME.eq(userdata.getUsername())).execute()
       if (recordsUpdated > ZERO_RECORDS) {
         log.info("Password changed successfully of username {}", userdata.getUsername())
         return new StringRepresentation("password updated successfully", MediaType.APPLICATION_JSON)
@@ -80,6 +85,10 @@ class UserDaoImpl implements UserDao {
   }
 
   private boolean checkIfPasswordIsCorrect(Userdata userdata, Record userRecord) {
-    return userRecord.get("password") == userdata.getPassword()
+    return BCrypt.checkpw(userdata.getPassword(), userRecord.get("password") as String);
+  }
+
+  private String getEncryptedPassword(String plainTextPassword) {
+    return BCrypt.hashpw(plainTextPassword, BCrypt.gensalt());
   }
 }
