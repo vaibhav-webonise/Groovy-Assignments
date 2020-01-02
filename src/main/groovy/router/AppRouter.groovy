@@ -1,5 +1,7 @@
+package router
+
 import com.google.inject.Inject
-import controller.SignInController
+import controller.UserController
 import controller.SignUpController
 import org.restlet.Context
 import restling.restlet.RestlingRouter
@@ -12,8 +14,8 @@ class AppRouter extends RestlingRouter {
 
   @Override
   void init() throws Exception {
-    attach("/sign-up", SignUpController)
-    attach("/sign-in", SignInController)
-    attach("/user", SignInController)
+    attach("/user/sign-up", SignUpController)
+    attach("/user/sign-in", UserController)
+    attach("/user/{id}", UserController)
   }
 }

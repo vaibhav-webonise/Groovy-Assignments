@@ -8,7 +8,7 @@
     <load-on-startup>1</load-on-startup>
     <init-param>
       <param-name>guice-module</param-name>
-      <param-value>AppModule</param-value>
+      <param-value>modules.AppModule</param-value>
     </init-param>
   </servlet>
   <servlet-mapping>

@@ -9,7 +9,7 @@
 
   <GlobalNamingResources>
     <Resource
-        name="jdbc/userDatabase-db"
+        name="jdbc/userDatabase"
         auth="Container"
         type="javax.sql.DataSource"
         maxActive="100"

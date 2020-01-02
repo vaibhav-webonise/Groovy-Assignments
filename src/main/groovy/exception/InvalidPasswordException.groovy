@@ -5,6 +5,6 @@ import org.restlet.resource.ResourceException
 
 class InvalidPasswordException extends ResourceException {
   InvalidPasswordException(String description) {
-    super(Status.CLIENT_ERROR_PRECONDITION_FAILED, description)
+    super(Status.CLIENT_ERROR_UNAUTHORIZED, description)
   }
 }

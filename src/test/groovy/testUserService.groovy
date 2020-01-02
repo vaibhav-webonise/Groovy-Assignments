@@ -1,7 +1,7 @@
 import db.sql.tables.pojos.Userdata
 import dao.UserDao
-import model.ResponseData
-import org.restlet.representation.Representation
+import exception.UserAlreadyExistsException
+import model.AuthenticationResponse
 import org.restlet.representation.StringRepresentation
 import service.UserService
 import service.impl.UserServiceImpl
@@ -18,10 +18,10 @@ class testUserService extends Specification {
     userdata.setPassword("vaibhav")
 
     when:
-    ResponseData responseData = userService.signInUserService(userdata);
+    AuthenticationResponse responseData = userService.signInUserService(userdata);
 
     then:
-    mockUserDao.signInUser(userdata) >> new ResponseData(1, "vaibhav")
+    mockUserDao.signInUser(userdata) >> new AuthenticationResponse(1, "vaibhav", "#gfwe627263726323123")
     userdata.getUsername() == responseData.getUsername()
   }
 
@@ -31,10 +31,23 @@ class testUserService extends Specification {
     userdata.setUsername("vaibhav")
     userdata.setPassword("vaibhav")
 
+    when: "signUpUserService method get called it throws exception"
+    userService.signUpUserService(userdata) >> { throw new UserAlreadyExistsException() }
+
+    then: "signUpUser method should get called by service layer"
+    mockUserDao.signUpUser(userdata) >> { throw new UserAlreadyExistsException() }
+  }
+
+  def "sign up for new user"() {
+    given:
+    Userdata userdata = new Userdata();
+    userdata.setUsername("vaibhav")
+    userdata.setPassword("vaibhav")
+
     when:
-    Representation representation = userService.signUpUserService(userdata)
+    userService.signUpUserService(userdata);
 
     then:
-    mockUserDao.signUpUser(userdata) >> new StringRepresentation("User registered")
+    mockUserDao.signInUser(userdata) >> new StringRepresentation("user registered")
   }
 }

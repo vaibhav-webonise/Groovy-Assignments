@@ -20,9 +20,9 @@ apply plugin: 'java'
 apply plugin: 'org.akhikhl.gretty'
 
 group 'com.webonise'
-version '1.0-SNAPSHOT'
+version '1.0.0'
 
-def changeLog = "/home/webonise/Downloads/user-module/src/main/db/changelog.xml"
+def changeLog = "src/main/db/changelog.xml"
 task('dev') {
   liquibase {
     activities {
@@ -61,7 +61,7 @@ dependencies {
   compile 'ch.qos.logback:logback-classic:1.0.9'
   compile 'ch.qos.logback:logback-core:1.0.9'
   compile group: 'org.mindrot', name: 'jbcrypt', version: '0.3m'
-
+  compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.4'
 }
 
 war {
@@ -74,7 +74,7 @@ gretty {
   systemProperties = System.properties
   servletContainer = 'tomcat8'
   contextPath = ""
-  serverConfigFile = "/home/webonise/Downloads/user-module/server.xml"
+  serverConfigFile = "server.xml"
   jvmArgs = ['-Djava.naming.factory.initial=org.apache.naming.java.javaURLContextFactory', '-Djava.naming.factory.url.pkgs=org.apache.naming']
   managedClassReload = true
 }

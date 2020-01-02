@@ -40,6 +40,6 @@ Installation: To run this app follow given steps,
 
 6. `$gradle tomcatRunWar`
 
-After follwing these all steps your application will be running on `http://localhost:8080/`
+After following these all steps your application will be running on `http://localhost:8080/`
 
 Author: `vaibhav-webonise vaibhav.anasune@weboniselab.com`

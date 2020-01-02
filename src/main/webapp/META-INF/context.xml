@@ -1,4 +1,4 @@
 <?xml version='1.0' encoding='utf-8'?>
 <Context>
-  <ResourceLink name="jdbc/userDatabase-db" global="jdbc/userDatabase-db" auth="Container" type="javax.sql.DataSource"/>
+  <ResourceLink name="jdbc/userDatabase" global="jdbc/userDatabase" auth="Container" type="javax.sql.DataSource"/>
 </Context>

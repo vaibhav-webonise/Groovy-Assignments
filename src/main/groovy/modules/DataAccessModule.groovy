@@ -7,7 +7,7 @@ import javax.naming.InitialContext
 import javax.sql.DataSource
 
 class DataAccessModule extends AbstractModule {
-  static final String DATASOURCE_JNDI = "java:comp/env/jdbc/userDatabase-db"
+  static final String DATASOURCE_JNDI = "java:comp/env/jdbc/userDatabase"
 
   @Override
   protected void configure() {
