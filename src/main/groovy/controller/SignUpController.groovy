@@ -35,7 +35,7 @@ class SignUpController extends ServerResource {
           throw new ValidationException("Invalid input, Unnecessary spaces in username or password")
         }
       } else {
-        throw new ValidationException("username and password can not be empty")
+        throw new ValidationException("Username and password fields must be there and can not be empty")
       }
     } else {
       throw new ValidationException("Request body can not be empty");

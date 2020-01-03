@@ -11,9 +11,9 @@ import static db.sql.tables.Userdata.USERDATA
 
 @Slf4j
 class UserDataValidation {
-  final DSLContext dslContext
-  final static int MIN_PASSWORD_LENGTH = 7
-  final static MIN_USERNAME_LENGTH = 7
+  private final DSLContext dslContext
+  private final static int MIN_PASSWORD_LENGTH = 7
+  private final static MIN_USERNAME_LENGTH = 7
 
   @Inject
   UserDataValidation(DSLContext dslContext) {

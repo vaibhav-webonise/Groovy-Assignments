@@ -34,7 +34,7 @@ class UserController extends ServerResource {
           throw new ValidationException("Invalid input, Unnecessary spaces in username or password")
         }
       } else {
-        throw new ValidationException("username and password can not be empty")
+        throw new ValidationException("Username and password fields must be there and can not be empty")
       }
     } else {
       throw new ValidationException("Request body can not be empty");
@@ -43,13 +43,13 @@ class UserController extends ServerResource {
 
   @Put
   Representation changeUserPassword(Userdata userdata) {
-    int id = UserDataValidation.getParsedIntFromString(getAttribute("id") as String)
+    int userId = UserDataValidation.getParsedIntFromString(getAttribute("id") as String)
     if (userDataValidation.isRequestBodyPresent(userdata)) {
       if (!userDataValidation.isDataNullOrEmpty(userdata.getNewPassword(), userdata.getPassword())) {
         if (userDataValidation.isInputFieldNotContainsSpace(userdata.getNewPassword(), userdata.getPassword())) {
           if (userDataValidation.isPasswordLengthValid(userdata.getNewPassword())) {
             if (userDataValidation.isTokenValid(getRequest().getHeaders().getFirstValue("authorization"))) {
-              return userService.changeUserPasswordService(userdata, id, getRequest().getHeaders().getFirstValue("authorization"))
+              return userService.changeUserPasswordService(userdata, userId, getRequest().getHeaders().getFirstValue("authorization"))
             } else {
               throw new InvalidTokenException("Request header must have valid authentication token associated with it")
             }
@@ -69,9 +69,9 @@ class UserController extends ServerResource {
 
   @Get
   ResponseData getUserData() {
-    int id = UserDataValidation.getParsedIntFromString(getAttribute("id") as String)
+    int userId = UserDataValidation.getParsedIntFromString(getAttribute("id") as String)
     if (userDataValidation.isTokenValid(getRequest().getHeaders().getFirstValue("authorization"))) {
-      return userService.getUserData(getRequest().getHeaders().getFirstValue("authorization"), id)
+      return userService.getUserData(getRequest().getHeaders().getFirstValue("authorization"), userId)
     } else {
       throw new InvalidTokenException("Request header must have valid authentication token associated with it")
     }
