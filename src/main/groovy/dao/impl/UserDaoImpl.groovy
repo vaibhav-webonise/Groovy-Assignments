@@ -55,51 +55,44 @@ class UserDaoImpl implements UserDao {
     }
   }
 
+
   @Override
   AuthenticationResponse signInUser(Userdata userdata) {
-    if (userDataValidation.isUserExists(userdata.getUsername())) {
-      Record userRecord = dslContext.fetchOne(dslContext.selectFrom("UserData").where(USERDATA.USERNAME.eq(userdata.getUsername())))
-      if (userDataValidation.isPasswordCorrect(userdata, userRecord)) {
-        log.info("User logged in successfully with username {}", userdata.getUsername())
-        return new AuthenticationResponse(userRecord.get("id") as int, userRecord.get("username") as String, jwtUtil.generateToken(userdata))
-      } else {
-        log.error("Password is invalid for username {}", userdata.getUsername())
-        throw new InvalidPasswordException("Password is invalid for username: " + userdata.getUsername())
-      }
-    } else {
+    Record userRecord = dslContext.fetchOne(dslContext.selectFrom("UserData").where(USERDATA.USERNAME.eq(userdata.getUsername())))
+    if (!userDataValidation.isUserExists(userdata.getUsername())) {
       log.error("User not exists with username {}", userdata.getUsername())
       throw new UserNotExistsException("User not exists with given username: " + userdata.getUsername())
+    } else if (!userDataValidation.isPasswordCorrect(userdata, userRecord)) {
+      log.error("Password is invalid for username {}", userdata.getUsername())
+      throw new InvalidPasswordException("Password is invalid for username: " + userdata.getUsername())
+    } else {
+      log.info("User logged in successfully with username {}", userdata.getUsername())
+      return new AuthenticationResponse(userRecord.get("id") as int, userRecord.get("username") as String, jwtUtil.generateToken(userdata))
     }
   }
 
   @Override
   Representation changeUserPassword(Userdata userdata, int userId, String token) {
-    if (userDataValidation.isUserExistsById(userId)) {
-      if (userDataValidation.isOldPasswordCorrect(userdata.getPassword(), userId)) {
-        if (!userDataValidation.isNewPassWordSame(userdata)) {
-          Record userRecord = dslContext.fetchOne(dslContext.selectFrom("UserData").where(USERDATA.ID.eq(userId)))
-          if (jwtUtil.validateToken(token, userRecord.get("username") as String)) {
-            int recordsUpdated = dslContext.update(USERDATA).
-                set(USERDATA.PASSWORD, userDataValidation.getEncryptedPassword(userdata.getNewPassword())).
-                set(USERDATA.NEW_PASSWORD, userDataValidation.getEncryptedPassword(userdata.getNewPassword())).where(USERDATA.ID.eq(userId)).execute()
-            if (recordsUpdated > ZERO_RECORDS) {
-              log.info("Password changed successfully of user userId {}", userId)
-              return new StringRepresentation("password updated successfully", MediaType.APPLICATION_JSON)
-            } else {
-              throw new RecordCouldNotSavedException("There is an issue while changing password of the user with userId: " + userId)
-            }
-          } else {
-            throw new InvalidTokenException("Unauthorized request by user id" + userId + ", Log-in and try again to change the password")
-          }
-        } else {
-          throw new SamePasswordException("Try another password ")
-        }
-      } else {
-        throw new InvalidPasswordException("Password is invalid for given user id" + userId)
-      }
-    } else {
+    Record userRecord = dslContext.fetchOne(dslContext.selectFrom("UserData").where(USERDATA.ID.eq(userId)))
+    if (!userDataValidation.isUserExistsById(userId)) {
       log.error("User not exists with the user userId: {}", userId)
       throw new UserNotExistsException("User not exists with given id:" + userId)
+    } else if (!userDataValidation.isOldPasswordCorrect(userdata.getPassword(), userId)) {
+      throw new InvalidPasswordException("Password is invalid for given user id" + userId)
+    } else if (userDataValidation.isNewPassWordSame(userdata)) {
+      throw new SamePasswordException("Try another password ")
+    } else if (!jwtUtil.validateToken(token, userRecord.get("username") as String)) {
+      throw new InvalidTokenException("Unauthorized request by user id" + userId + ", Log-in and try again to change the password")
+    } else {
+      int recordsUpdated = dslContext.update(USERDATA).
+          set(USERDATA.PASSWORD, userDataValidation.getEncryptedPassword(userdata.getNewPassword())).
+          set(USERDATA.NEW_PASSWORD, userDataValidation.getEncryptedPassword(userdata.getNewPassword())).where(USERDATA.ID.eq(userId)).execute()
+      if (recordsUpdated > ZERO_RECORDS) {
+        log.info("Password changed successfully of user userId {}", userId)
+        return new StringRepresentation("password updated successfully", MediaType.APPLICATION_JSON)
+      } else {
+        throw new RecordCouldNotSavedException("There is an issue while changing password of the user with userId: " + userId)
+      }
     }
   }
 

@@ -26,44 +26,33 @@ class UserController extends ServerResource {
 
   @Post
   AuthenticationResponse signInUser(Userdata userdata) {
-    if (userDataValidation.isRequestBodyPresent(userdata)) {
-      if (!userDataValidation.isDataNullOrEmpty(userdata.getUsername(), userdata.getPassword())) {
-        if (userDataValidation.isInputFieldNotContainsSpace(userdata.getUsername(), userdata.getPassword())) {
-          return userService.signInUserService(userdata)
-        } else {
-          throw new ValidationException("Invalid input, Unnecessary spaces in username or password")
-        }
-      } else {
-        throw new ValidationException("Username and password fields must be there and can not be empty")
-      }
-    } else {
+    if (!userDataValidation.isRequestBodyPresent(userdata)) {
       throw new ValidationException("Request body can not be empty");
+    } else if (userDataValidation.isDataNullOrEmpty(userdata.getUsername(), userdata.getPassword())) {
+      throw new ValidationException("Username and password fields must be there and can not be empty")
+    } else if (!userDataValidation.isInputFieldNotContainsSpace(userdata.getUsername(), userdata.getPassword())) {
+      throw new ValidationException("Invalid input, Unnecessary spaces in username or password")
+    } else {
+      return userService.signInUserService(userdata)
     }
   }
+
 
   @Put
   Representation changeUserPassword(Userdata userdata) {
     int userId = UserDataValidation.getParsedIntFromString(getAttribute("id") as String)
-    if (userDataValidation.isRequestBodyPresent(userdata)) {
-      if (!userDataValidation.isDataNullOrEmpty(userdata.getNewPassword(), userdata.getPassword())) {
-        if (userDataValidation.isInputFieldNotContainsSpace(userdata.getNewPassword(), userdata.getPassword())) {
-          if (userDataValidation.isPasswordLengthValid(userdata.getNewPassword())) {
-            if (userDataValidation.isTokenValid(getRequest().getHeaders().getFirstValue("authorization"))) {
-              return userService.changeUserPasswordService(userdata, userId, getRequest().getHeaders().getFirstValue("authorization"))
-            } else {
-              throw new InvalidTokenException("Request header must have valid authentication token associated with it")
-            }
-          } else {
-            throw new ValidationException("Password must have at least 7 characters")
-          }
-        } else {
-          throw new ValidationException("Invalid input, Unnecessary spaces in password")
-        }
-      } else {
-        throw new ValidationException("Password field can not be empty")
-      }
-    } else {
+    if (!userDataValidation.isRequestBodyPresent(userdata)) {
       throw new ValidationException("Request body can not be empty");
+    } else if (userDataValidation.isDataNullOrEmpty(userdata.getNewPassword(), userdata.getPassword())) {
+      throw new ValidationException("Password field can not be empty")
+    } else if (!userDataValidation.isInputFieldNotContainsSpace(userdata.getNewPassword(), userdata.getPassword())) {
+      throw new ValidationException("Invalid input, Unnecessary spaces in password")
+    } else if (!userDataValidation.isPasswordLengthValid(userdata.getNewPassword())) {
+      throw new ValidationException("Password must have at least 7 characters")
+    } else if (!userDataValidation.isTokenValid(getRequest().getHeaders().getFirstValue("authorization"))) {
+      throw new InvalidTokenException("Request header must have valid authentication token associated with it")
+    } else {
+      return userService.changeUserPasswordService(userdata, userId, getRequest().getHeaders().getFirstValue("authorization"))
     }
   }
 

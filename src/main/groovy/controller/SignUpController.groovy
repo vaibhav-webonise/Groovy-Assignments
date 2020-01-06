@@ -23,22 +23,16 @@ class SignUpController extends ServerResource {
 
   @Post
   Representation signUpUser(Userdata userdata) {
-    if (userDataValidation.isRequestBodyPresent(userdata)) {
-      if (!userDataValidation.isDataNullOrEmpty(userdata.getUsername(), userdata.getPassword())) {
-        if (userDataValidation.isInputFieldNotContainsSpace(userdata.getUsername(), userdata.getPassword())) {
-          if (userDataValidation.isPasswordLengthValid(userdata.getPassword()) && userDataValidation.isUsernameLengthValid(userdata.getUsername())) {
-            return userService.signUpUserService(userdata)
-          } else {
-            throw new ValidationException("username and password must have at least 7 characters")
-          }
-        } else {
-          throw new ValidationException("Invalid input, Unnecessary spaces in username or password")
-        }
-      } else {
-        throw new ValidationException("Username and password fields must be there and can not be empty")
-      }
-    } else {
+    if (!userDataValidation.isRequestBodyPresent(userdata)) {
       throw new ValidationException("Request body can not be empty");
+    } else if (userDataValidation.isDataNullOrEmpty(userdata.getUsername(), userdata.getPassword())) {
+      throw new ValidationException("Username and password fields must be there and can not be empty")
+    } else if (!userDataValidation.isInputFieldNotContainsSpace(userdata.getUsername(), userdata.getPassword())) {
+      throw new ValidationException("Invalid input, Unnecessary spaces in username or password")
+    } else if (!userDataValidation.isPasswordLengthValid(userdata.getPassword()) || !userDataValidation.isUsernameLengthValid(userdata.getUsername())) {
+      throw new ValidationException("username and password must have at least 7 characters")
+    } else {
+      return userService.signUpUserService(userdata)
     }
   }
 }
