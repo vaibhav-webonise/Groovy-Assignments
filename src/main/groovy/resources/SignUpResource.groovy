@@ -1,4 +1,4 @@
-package controller
+package resources
 
 import db.sql.tables.pojos.Userdata
 import exception.ValidationException
@@ -11,12 +11,12 @@ import validation.UserDataValidation
 import javax.inject.Inject
 
 @CompileStatic
-class SignUpController extends ServerResource {
+class SignUpResource extends ServerResource {
   private final UserService userService;
   private final UserDataValidation userDataValidation;
 
   @Inject
-  SignUpController(UserService userService, UserDataValidation userDataValidation) {
+  SignUpResource(UserService userService, UserDataValidation userDataValidation) {
     this.userService = userService
     this.userDataValidation = userDataValidation
   }

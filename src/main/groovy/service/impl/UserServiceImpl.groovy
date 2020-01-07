@@ -27,12 +27,12 @@ class UserServiceImpl implements UserService {
   }
 
   @Override
-  Representation changeUserPasswordService(Userdata userdata, int id, String token) {
-    return userDao.changeUserPassword(userdata, id, token)
+  Representation changeUserPasswordService(Userdata userdata, int id) {
+    return userDao.changeUserPassword(userdata, id)
   }
 
   @Override
-  ResponseData getUserData(String token, int id) {
-    return userDao.getUserData(token, id)
+  ResponseData getUserData(int id) {
+    return userDao.getUserData(id)
   }
 }

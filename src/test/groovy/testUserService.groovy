@@ -22,7 +22,9 @@ class testUserService extends Specification {
 
     then:
     mockUserDao.signInUser(userdata) >> new AuthenticationResponse(1, "vaibhav", "#gfwe627263726323123")
-    userdata.getUsername() == responseData.getUsername()
+    assert responseData.username == "vaibhav"
+    assert responseData.id == 1
+    assert responseData.jwtToken == "#gfwe627263726323123"
   }
 
   def "sign up user"() {

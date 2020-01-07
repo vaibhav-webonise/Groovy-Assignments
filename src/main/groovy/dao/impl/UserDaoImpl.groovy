@@ -72,7 +72,7 @@ class UserDaoImpl implements UserDao {
   }
 
   @Override
-  Representation changeUserPassword(Userdata userdata, int userId, String token) {
+  Representation changeUserPassword(Userdata userdata, int userId) {
     Record userRecord = dslContext.fetchOne(dslContext.selectFrom("UserData").where(USERDATA.ID.eq(userId)))
     if (!userDataValidation.isUserExistsById(userId)) {
       log.error("User not exists with the user userId: {}", userId)
@@ -81,8 +81,6 @@ class UserDaoImpl implements UserDao {
       throw new InvalidPasswordException("Password is invalid for given user id" + userId)
     } else if (userDataValidation.isNewPassWordSame(userdata)) {
       throw new SamePasswordException("Try another password ")
-    } else if (!jwtUtil.validateToken(token, userRecord.get("username") as String)) {
-      throw new InvalidTokenException("Unauthorized request by user id" + userId + ", Log-in and try again to change the password")
     } else {
       int recordsUpdated = dslContext.update(USERDATA).
           set(USERDATA.PASSWORD, userDataValidation.getEncryptedPassword(userdata.getNewPassword())).
@@ -97,14 +95,10 @@ class UserDaoImpl implements UserDao {
   }
 
   @Override
-  ResponseData getUserData(String token, int userId) {
+  ResponseData getUserData(int userId) {
     if (userDataValidation.isUserExistsById(userId)) {
       Record userRecord = dslContext.fetchOne(dslContext.selectFrom("UserData").where(USERDATA.ID.eq(userId)))
-      if (jwtUtil.validateToken(token, userRecord.get("username") as String)) {
-        return new ResponseData(userRecord.get("id") as int, userRecord.get("username") as String)
-      } else {
-        throw new InvalidTokenException("Unauthorized request by the user with id:" + userId)
-      }
+      return new ResponseData(userRecord.get("id") as int, userRecord.get("username") as String)
     } else {
       log.error("User not exists with user id {}", userId)
       throw new UserNotExistsException("User not exists with given id:" + userId)

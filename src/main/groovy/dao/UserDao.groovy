@@ -7,7 +7,10 @@ import org.restlet.representation.Representation
 
 interface UserDao {
   Representation signUpUser(Userdata userdata)
+
   AuthenticationResponse signInUser(Userdata userdata)
-  Representation changeUserPassword(Userdata userdata, int id, String token)
-  ResponseData getUserData(String token, int id)
+
+  Representation changeUserPassword(Userdata userdata, int id)
+
+  ResponseData getUserData(int id)
 }

@@ -25,10 +25,9 @@ interface UserService {
    * changes the password of requested user
    * @param userdata
    * @param userId
-   * @Param token
-   * @return representation object with success message
+   * @Param token* @return representation object with success message
    */
-  Representation changeUserPasswordService(Userdata userdata, int userId, String token)
+  Representation changeUserPasswordService(Userdata userdata, int userId)
 
   /**
    * retrieves the user information
@@ -36,5 +35,5 @@ interface UserService {
    * @param userId
    * @return ResponseData object
    */
-  ResponseData getUserData(String token, int userId)
+  ResponseData getUserData(int userId)
 }
