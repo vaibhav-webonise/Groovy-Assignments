@@ -1,13 +1,18 @@
+import dao.impl.UserDaoImpl
 import db.sql.tables.pojos.Userdata
 import dao.UserDao
-import exception.UserAlreadyExistsException
+import exception.UserNotExistsException
 import model.AuthenticationResponse
+import org.jooq.DSLContext
+import org.restlet.representation.Representation
 import org.restlet.representation.StringRepresentation
 import service.UserService
 import service.impl.UserServiceImpl
 import spock.lang.Specification
 
+
 class testUserService extends Specification {
+
   UserDao mockUserDao = Mock(UserDao)
   UserService userService = new UserServiceImpl(mockUserDao)
 
@@ -18,13 +23,11 @@ class testUserService extends Specification {
     userdata.setPassword("vaibhav")
 
     when:
-    AuthenticationResponse responseData = userService.signInUserService(userdata);
+    userService.signInUserService(userdata);
 
     then:
-    mockUserDao.signInUser(userdata) >> new AuthenticationResponse(1, "vaibhav", "#gfwe627263726323123")
-    assert responseData.username == "vaibhav"
-    assert responseData.id == 1
-    assert responseData.jwtToken == "#gfwe627263726323123"
+    AuthenticationResponse response = mockUserDao.signInUser(userdata)
+    assert response.username == userdata.getUsername();
   }
 
   def "sign up user"() {
@@ -34,10 +37,10 @@ class testUserService extends Specification {
     userdata.setPassword("vaibhav")
 
     when: "signUpUserService method get called it throws exception"
-    userService.signUpUserService(userdata) >> { throw new UserAlreadyExistsException() }
+    userService.signUpUserService(userdata)
 
     then: "signUpUser method should get called by service layer"
-    mockUserDao.signUpUser(userdata) >> { throw new UserAlreadyExistsException() }
+    thrown UserNotExistsException
   }
 
   def "sign up for new user"() {

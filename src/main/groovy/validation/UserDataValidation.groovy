@@ -3,22 +3,13 @@ package validation
 import db.sql.tables.pojos.Userdata
 import exception.InvalidPathAttributeException
 import groovy.util.logging.Slf4j
-import org.jooq.DSLContext
 import org.jooq.Record
 import org.mindrot.jbcrypt.BCrypt
-import javax.inject.Inject
-import static db.sql.tables.Userdata.USERDATA
 
 @Slf4j
 class UserDataValidation {
-  private final DSLContext dslContext
   private final static int MIN_PASSWORD_LENGTH = 7
   private final static MIN_USERNAME_LENGTH = 7
-
-  @Inject
-  UserDataValidation(DSLContext dslContext) {
-    this.dslContext = dslContext
-  }
 
   static Boolean isPasswordLengthValid(String password) {
     return password.length() >= MIN_PASSWORD_LENGTH;
@@ -40,14 +31,6 @@ class UserDataValidation {
     return !username.contains(" ") && !password.contains(" ")
   }
 
-  boolean isUserExists(String username) {
-    return dslContext.fetchExists(dslContext.selectFrom("UserData").where(USERDATA.USERNAME.eq(username)))
-  }
-
-  boolean isUserExistsById(int id) {
-    return dslContext.fetchExists(dslContext.selectFrom("UserData").where(USERDATA.ID.eq(id)))
-  }
-
   static boolean isPasswordCorrect(Userdata userdata, Record userRecord) {
     return BCrypt.checkpw(userdata.getPassword(), userRecord.get("password") as String)
   }
@@ -60,11 +43,6 @@ class UserDataValidation {
     return userdata.getPassword() == userdata.getNewPassword()
   }
 
-  boolean isOldPasswordCorrect(String password, int id) {
-    Record userRecord = dslContext.fetchOne(dslContext.selectFrom("UserData").where(USERDATA.ID.eq(id)))
-    return BCrypt.checkpw(password, userRecord.get("password") as String)
-  }
-
   static int getParsedIntFromString(String input) {
     try {
       return Integer.parseInt(input)
@@ -75,7 +53,7 @@ class UserDataValidation {
     }
   }
 
-  static Boolean isTokenValid(String token) {
+  static Boolean isTokenPresent(String token) {
     return token != null && !token.isEmpty()
   }
 }

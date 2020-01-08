@@ -13,4 +13,10 @@ interface UserDao {
   Representation changeUserPassword(Userdata userdata, int id)
 
   ResponseData getUserData(int id)
+
+  boolean isUserExists(String username)
+
+  boolean isUserExistsById(int id)
+
+  boolean isOldPasswordCorrect(String password, int id)
 }
