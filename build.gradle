@@ -1,0 +1,108 @@
+buildscript {
+  repositories {
+    jcenter()
+    mavenLocal()
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'org.akhikhl.gretty:gretty:1.4.0'
+    classpath 'org.liquibase:liquibase-core:3.4.1'
+    classpath "org.liquibase:liquibase-gradle-plugin:1.1.1"
+    classpath 'mysql:mysql-connector-java:5.1.13'
+    classpath 'org.jooq:jooq-codegen:3.11.11'
+  }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'war'
+apply plugin: 'liquibase'
+apply plugin: 'java'
+apply plugin: 'org.akhikhl.gretty'
+
+group 'com.webonise'
+version '1.0.0'
+
+def changeLog = "src/main/db/changelog.xml"
+task('dev') {
+  liquibase {
+    activities {
+      main {
+        changeLogFile changeLog
+        url "${databaseUrl}"
+        username "${dbUsername}"
+        password "${dbPassword}"
+      }
+    }
+  }
+}
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+  jcenter()
+}
+
+dependencies {
+  compile 'org.codehaus.groovy:groovy-all:2.3.11'
+  testCompile group: 'junit', name: 'junit', version: '4.12'
+  compile 'restling:restling-core:0.0.7'
+
+  def tomcatVersion = "8.0.26"
+  grettyRunnerTomcat8 "com.zaxxer:HikariCP:2.4.0"
+  grettyRunnerTomcat8 "mysql:mysql-connector-java:5.1.13"
+  grettyRunnerTomcat8 "org.apache.tomcat:tomcat-api:$tomcatVersion"
+  grettyRunnerTomcat8 "org.apache.tomcat:tomcat-jdbc:$tomcatVersion"
+  grettyRunnerTomcat8 "org.apache.tomcat:tomcat-dbcp:$tomcatVersion"
+  testCompile 'org.apache.tomcat:tomcat-catalina:9.0.0.M3'
+  compile 'org.jooq:jooq:3.11.11'
+  runtime 'mysql:mysql-connector-java:5.1.13'
+  testCompile group: 'org.spockframework', name: 'spock-core', version: '1.1-groovy-2.4-rc-4'
+  compile 'org.slf4j:slf4j-api:1.7.2'
+  compile 'ch.qos.logback:logback-classic:1.0.9'
+  compile 'ch.qos.logback:logback-core:1.0.9'
+  compile group: 'org.mindrot', name: 'jbcrypt', version: '0.3m'
+  compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.4'
+}
+
+war {
+  from 'src/main/webapp'
+  webInf { from 'src/main/webapp/WEB-INF' }
+  webXml = file('src/main/webapp/WEB-INF/web.xml')
+}
+
+gretty {
+  systemProperties = System.properties
+  servletContainer = 'tomcat8'
+  contextPath = ""
+  serverConfigFile = "server.xml"
+  jvmArgs = ['-Djava.naming.factory.initial=org.apache.naming.java.javaURLContextFactory', '-Djava.naming.factory.url.pkgs=org.apache.naming']
+  managedClassReload = true
+}
+
+def writer = new StringWriter()
+def xml = new groovy.xml.MarkupBuilder(writer).configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.11.0.xsd') {
+  jdbc() {
+    driver('com.mysql.jdbc.Driver')
+    url("${jooqDatabaseUrl}")
+    user("${dbUsername}")
+    password("${dbPassword}")
+  }
+  generator() {
+    database() {
+      inputSchema("${targetDatabaseName}")
+    }
+
+    generate([:]) {
+      pojos true
+      daos true
+    }
+    target() {
+      packageName("${jooqTargetPackageName}")
+      directory("${jooqTargetDirectory}")
+    }
+  }
+}
+
+task('generate') {
+  org.jooq.codegen.GenerationTool.generate(writer.toString())
+}
